@@ -1,0 +1,22 @@
+{
+  "private": "true",
+  "scripts": {
+    "test": "npm run editorconfig && npm run stylelint && npm run eslint",
+    "start": "gulp",
+    "build": "gulp build"
+  },
+  "devDependencies": {
+    "@htmlacademy/editorconfig-cli": "^1.0.0",
+    "browser-sync": "^2.27.5",
+    "del": "^6.0.0",
+    "eslint": "^7.32.0",
+    "eslint-config-htmlacademy": "^4.0.2",
+    "gulp": "^4.0.2",
+    "stylelint": "^13.13.1",
+    "stylelint-config-htmlacademy": "^0.1.10",
+    "webpack-stream": "^6.1.2"
+  },
+  "engines": {
+    "node": "14.17.5"
+  }
+}
