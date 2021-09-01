@@ -12,10 +12,27 @@
     "eslint": "^7.32.0",
     "eslint-config-htmlacademy": "^4.0.2",
     "gulp": "^4.0.2",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-rename": "^2.0.0",
+    "gulp-sourcemaps": "^3.0.0",
+    "gulp-twig": "^1.2.0",
     "stylelint": "^13.13.1",
     "stylelint-config-htmlacademy": "^0.1.10",
     "webpack-stream": "^6.1.2"
   },
+  "browserslist": [
+    "last 4 versions",
+    "not dead",
+    "not ie <= 11"
+  ],
+  "editorconfig-cli": [
+    "./*.json",
+    "./*.js",
+    "./src/*.twig",
+    "./src/img/sprite/*.svg",
+    "./src/js/**/*.js",
+    "./src/styles/**/*.{sass,scss,pcss,less,css}"
+  ],
   "engines": {
     "node": "14.17.5"
   }
