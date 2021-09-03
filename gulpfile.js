@@ -5,8 +5,8 @@ import sourcemap from 'gulp-sourcemaps';
 import browserSync from 'browser-sync';
 import twig from 'gulp-twig';
 import htmlmin from 'gulp-htmlmin';
-import svgstore from 'gulp-svgstore';
 import svgmin from 'gulp-svgmin';
+import svgsprite from 'gulp-svg-sprite';
 import inject from 'gulp-inject';
 import imagemin from 'gulp-imagemin';
 
@@ -22,21 +22,29 @@ const clear = () => {
 /* inline svg */
 const inlineSvg = () => {
   const svgs = gulp.src('./src/img/sprite/*.svg')
-    .pipe(svgmin({
-      removeXMLNS: true,
-      removeViewBox: false,
-      removeDimensions: true,
-    }))
-    .pipe(svgstore({ inlineSvg: true }));
+    .pipe(svgmin())
+    .pipe(svgsprite({
+      mode: {
+        symbol:{
+          dest: '.',
+          example: false,
+          sprite: 'sprite.svg',
+        },
+      },
+      shape: {
+        transform: ['svgo'],
+      },
+     }))
+    .pipe(gulp.dest('build/'));
 
-  const fileContents = (filePath, file) => {
-    return file.contents.toString();
-  };
+  return svgs;
+  // const fileContents = (filePath, file) => {
+  //   return file.contents.toString();
+  // };
 
-  return gulp.src('./build/*.html')
-    .pipe(inject(svgs, { transform: fileContents }))
-    .pipe(gulp.dest('build/'))
-    .pipe(sync.stream());
+  // return gulp.src('./build/*.html')
+  //   .pipe(inject(svgs, { transform: fileContents }))
+  //   .pipe(sync.stream());
 };
 
 /* twig */
