@@ -5,12 +5,13 @@
     "stylelint": "stylelint \"src/styles/**/*.scss\" --syntax scss",
     "eslint": "eslint src/js/",
     "test": "npm run editorconfig && npm run stylelint && npm run eslint",
-    "start": "npm run test && gulp",
-    "build": "npm run test && gulp build"
+    "start": "gulp",
+    "build": "cross-env NODE_ENV=production gulp build"
   },
   "devDependencies": {
     "@htmlacademy/editorconfig-cli": "^1.0.0",
     "browser-sync": "^2.27.5",
+    "cross-env": "^7.0.3",
     "cssnano": "^5.0.8",
     "del": "^6.0.0",
     "editorconfig-cli": "^0.3.0",

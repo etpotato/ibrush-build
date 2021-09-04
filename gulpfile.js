@@ -19,6 +19,9 @@ import mozjpeg from 'imagemin-mozjpeg';
 import optipng from 'imagemin-optipng';
 import svgo from 'imagemin-svgo';
 import gulpWebp from 'gulp-webp';
+import webpack from 'webpack-stream';
+import webpackConfig from './webpack.config.js';
+
 
 const sync = browserSync.create();
 
@@ -87,7 +90,9 @@ const inlineSvg = () => {
 const html = () => {
   return gulp.src('./src/*.twig')
     .pipe(twig())
-    // .pipe(htmlmin({ collapseWhitespace: true }))
+    .pipe(htmlmin({
+      collapseWhitespace:  process.env.NODE_ENV === 'production' ? true : false,
+    }))
     .pipe(gulp.dest('./build/'))
     .pipe(sync.stream());
 };
@@ -106,6 +111,20 @@ const styles = () => {
     .pipe(rename('main.min.css'))
     .pipe(sourcemap.write('.'))
     .pipe(gulp.dest('build/styles'))
+    .pipe(sync.stream());
+};
+
+/* scripts */
+const js = () => {
+  console.log('NODE_ENV: ' + process.env.NODE_ENV);
+  return gulp.src('./src/js/**/*.js')
+    .pipe(webpack( webpackConfig
+      // require('./webpack.config.js')
+    //  compiler, (err, stats) => {
+    //   console.log(stats.compiler);
+    // }
+    ))
+    .pipe(gulp.dest('./build/js/'))
     .pipe(sync.stream());
 };
 
@@ -171,22 +190,21 @@ const server = (done) => {
 const watcher = () => {
   gulp.watch('./src/**/*.twig', html);
   gulp.watch('./src/styles/**/*.scss', styles);
-  gulp.watch('./src/**/*.js', jsDev);
+  gulp.watch('./src/**/*.js', js);
   gulp.watch('./src/fonts/*', copyFonts);
   gulp.watch('./src/img/**/*', {ignore: './src/img/sprite/'}, gulp.parallel(copyImages, webp));
   gulp.watch('./src/img/sprite/*.svg', inlineSvg);
 }
 
 /* export */
-exports.default = gulp.series(
+export default gulp.series(
   clear,
-  gulp.parallel(gulp.series(inlineSvg, html), styles, copy, webp, jsDev),
+  gulp.parallel(gulp.series(inlineSvg, html), styles, copy, webp, js),
   server,
   watcher,
 );
 
-exports.build = gulp.series(
+export const build = gulp.series(
   clear,
-  gulp.parallel(gulp.series(inlineSvg, html), styles, copyFonts, optimizeImages, webp, jsProd),
-  server,
+  gulp.parallel(gulp.series(inlineSvg, html), styles, copyFonts, optimizeImages, webp, js),
 );
