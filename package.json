@@ -9,7 +9,10 @@
     "build": "cross-env NODE_ENV=production gulp build"
   },
   "devDependencies": {
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.4",
     "@htmlacademy/editorconfig-cli": "^1.0.0",
+    "babel-loader": "^8.2.2",
     "browser-sync": "^2.27.5",
     "cross-env": "^7.0.3",
     "cssnano": "^5.0.8",
@@ -40,8 +43,8 @@
     "webpack-stream": "^6.1.2"
   },
   "browserslist": [
-    "last 4 versions",
-    "not dead",
+    "last 2 versions",
+    "> 1%",
     "not ie <= 11"
   ],
   "editorconfig-cli": [
