@@ -32,7 +32,7 @@ const clear = () => {
 
 /* inline svg */
 const inlineSvg = () => {
-  const svgs = gulp.src('./src/img/sprite/*.svg')
+  return gulp.src('./src/img/sprite/*.svg')
     .pipe(imagemin([
       svgo({
         plugins: [
@@ -77,21 +77,20 @@ const inlineSvg = () => {
         dimensionAttributes: true,
       },
      }));
-  const fileContents = (filePath, file) => {
-    return file.contents.toString();
-  };
-  return gulp.src('./src/templates/base.twig')
-    .pipe(inject(svgs, { transform: fileContents }))
-    .pipe(gulp.dest('./src/templates/'))
-    .pipe(sync.stream());
 };
 
 /* html */
 const html = () => {
+  const svgs = inlineSvg();
+  const fileContents = (filePath, file) => {
+    return file.contents.toString();
+  };
   return gulp.src('./src/*.twig')
     .pipe(twig())
+    .pipe(inject(svgs, { transform: fileContents }))
     .pipe(htmlmin({
-      collapseWhitespace:  process.env.NODE_ENV === 'production' ? true : false,
+      collapseWhitespace: process.env.NODE_ENV === 'production' ? true : false,
+      removeComments: process.env.NODE_ENV === 'production' ? true : false,
     }))
     .pipe(gulp.dest('./build/'))
     .pipe(sync.stream());
@@ -116,31 +115,30 @@ const styles = () => {
 
 /* scripts */
 const js = () => {
-  console.log('NODE_ENV: ' + process.env.NODE_ENV);
   return gulp.src('./src/js/**/*.js')
-    .pipe(webpack( webpackConfig
-      // require('./webpack.config.js')
-    //  compiler, (err, stats) => {
-    //   console.log(stats.compiler);
-    // }
-    ))
+    .pipe(webpack(webpackConfig))
     .pipe(gulp.dest('./build/js/'))
     .pipe(sync.stream());
 };
 
 /* copy */
+const copyAssets = () => {
+  return gulp.src('./src/assets/*')
+    .pipe(gulp.dest('./build/assets/'))
+    .pipe(sync.stream());
+}
 const copyFonts = () => {
   return gulp.src('./src/fonts/*')
     .pipe(gulp.dest('./build/fonts/'))
     .pipe(sync.stream());
 };
 const copyImages = () => {
-  return gulp.src('./src/img/*', {ignore: './src/img/sprite/'})
+  return gulp.src('./src/img/**/*', {ignore: './src/img/sprite/'})
     .pipe(gulp.dest('./build/img/'))
     .pipe(sync.stream());
 };
 
-const copy = gulp.parallel(copyFonts, copyImages);
+const copy = gulp.parallel(copyAssets, copyFonts, copyImages);
 
 /* images */
 const webp = () => {
@@ -193,18 +191,18 @@ const watcher = () => {
   gulp.watch('./src/**/*.js', js);
   gulp.watch('./src/fonts/*', copyFonts);
   gulp.watch('./src/img/**/*', {ignore: './src/img/sprite/'}, gulp.parallel(copyImages, webp));
-  gulp.watch('./src/img/sprite/*.svg', inlineSvg);
+  gulp.watch('./src/img/sprite/*.svg', html);
 }
 
 /* export */
 export default gulp.series(
   clear,
-  gulp.parallel(gulp.series(inlineSvg, html), styles, copy, webp, js),
+  gulp.parallel(html, styles, copy, webp, js),
   server,
   watcher,
 );
 
 export const build = gulp.series(
   clear,
-  gulp.parallel(gulp.series(inlineSvg, html), styles, copyFonts, optimizeImages, webp, js),
+  gulp.parallel(html, styles, copyAssets, copyFonts, optimizeImages, webp, js),
 );
