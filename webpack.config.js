@@ -1,4 +1,4 @@
-import path from 'path';
+import { StatsWriterPlugin } from 'webpack-stats-plugin';
 let mode = 'development';
 
 if (process.env.NODE_ENV === 'production') {
@@ -28,6 +28,14 @@ export default {
       },
     ],
   },
+  plugins: [
+    new StatsWriterPlugin({
+      stats: {
+        all: true,
+        assets: true,
+      },
+    }),
+  ],
   optimization: {
     runtimeChunk: 'single',
     splitChunks: {
@@ -39,5 +47,8 @@ export default {
         },
       },
     },
+  },
+  externals: {
+    jquery: 'jQuery',
   },
 };
